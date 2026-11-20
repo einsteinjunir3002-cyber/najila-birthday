@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Najila's Birthday Adventure 🌸🎂</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="orientation-overlay">
+        <div class="orientation-content">
+            <div class="rotate-icon">🔄</div>
+            <h2>Please Rotate Your Device</h2>
+            <p>For the best mobile experience, please play this game in landscape mode.</p>
+            <button id="dismissOrientationBtn" class="btn primary" style="margin-top: 20px;">Got it, play anyway</button>
+        </div>
+    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-left">
+                <div id="hearts"></div>
+                <div class="collectible">🧁 <span id="cupcakeCount">0</span></div>
+                <div class="collectible">🎁 <span id="giftCount">0</span></div>
+            </div>
+            <div class="hud-center">
+                <div id="levelDisplay">Level 1</div>
+            </div>
+            <div class="hud-right">
+                <button id="pauseBtn" class="btn small-btn">⏸ Pause</button>
+            </div>
+        </div>
+
+        <!-- Overlays -->
+        <div id="menuOverlay" class="overlay active">
+            <div class="panel">
+                <h1 class="bounce-text">Najila's Quest 🌸🎂</h1>
+                <p>Avoid obstacles to collect birthday cupcakes & secret gifts for the star of the show!</p>
+                <button id="startBtn" class="btn primary">Start Adventure</button>
+                <button id="levelSelectBtn" class="btn" style="background: linear-gradient(135deg, #7209b7, #4361ee); color: white; display: none;">Select Level 🗺️</button>
+                <button id="instructionsBtn" class="btn">Instructions</button>
+                <button id="creditsBtn" class="btn">Credits</button>
+                <button id="homeBtn" class="btn" onclick="window.location.href='../index.html'" style="margin-top: 15px; background: #999;">Back to Home</button>
+            </div>
+        </div>
+
+        <div id="levelSelectOverlay" class="overlay hidden">
+            <div class="panel level-select-panel">
+                <h2 style="color: #4361ee;">Select Starting Level 🗺️</h2>
+                <p style="color: #555; font-size: 14.5px; margin-bottom: 16px;">Najila's Quest Conquered! Pick any level to replay:</p>
+                <div class="level-select-grid">
+                    <button class="level-choice-btn" data-level="1">🌸 Level 1: Birthday Meadow</button>
+                    <button class="level-choice-btn" data-level="2">🎁 Level 2: Gift Valley</button>
+                    <button class="level-choice-btn" data-level="3">🏰 Level 3: Goblin Castle</button>
+                    <button class="level-choice-btn" data-level="4">🏖️ Level 4: Sunset Shore</button>
+                    <button class="level-choice-btn" data-level="5">📚 Level 5: Starlight Academy</button>
+                    <button class="level-choice-btn" data-level="6">👑 Level 6: The Royal Coronation</button>
+                </div>
+                <button id="backFromLevelSelectBtn" class="btn" style="margin-top: 16px;">Back to Menu</button>
+            </div>
+        </div>
+
+        <div id="instructionsOverlay" class="overlay hidden">
+            <div class="panel">
+                <h2>How to Play</h2>
+                <div class="instructions-content">
+                    <p><strong>Move:</strong> Left/Right Arrows or A/D</p>
+                    <p><strong>Jump:</strong> Up Arrow or W (Double jump available!)</p>
+                    <p><strong>Shoot:</strong> Space (Destroys ants and bosses, but NOT bombs!)</p>
+                    <p><strong>Crouch:</strong> Down Arrow or S</p>
+                    <p><strong>Mobile:</strong> Use on-screen controls</p>
+                    <p>🧁 Cupcakes give extra score and lives (Optional)</p>
+                    <p>🎁 You MUST find all hidden gifts to unlock secret flirty notes!</p>
+                </div>
+                <button id="backFromInstBtn" class="btn">Back</button>
+            </div>
+        </div>
+        
+        <div id="creditsOverlay" class="overlay hidden">
+            <div class="panel">
+                <h2>Credits</h2>
+                <p>Created with cheeky flirty love & birthday congratulations for Najila! 🎉🌸</p>
+                <p>Dedicated to Najila, the most charming anime-vibed superstar!</p>
+                <button id="backFromCreditsBtn" class="btn">Back</button>
+            </div>
+        </div>
+
+        <div id="confirmOverlay" class="overlay hidden">
+            <div class="panel">
+                <h2>Go Back?</h2>
+                <p>Do you want to move back to Level 1?</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                    <button id="confirmYesBtn" class="btn primary">Yes</button>
+                    <button id="confirmNoBtn" class="btn">No</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="pauseOverlay" class="overlay hidden">
+            <div class="panel">
+                <h2>Paused</h2>
+                <button id="resumeBtn" class="btn primary">Resume</button>
+                <button id="restartBtn" class="btn">Restart Level</button>
+                <button id="menuBtn" class="btn">Main Menu</button>
+            </div>
+        </div>
+
+        <div id="gameOverOverlay" class="overlay hidden">
+            <div class="panel">
+                <h2>Game Over!</h2>
+                <p>Don't give up, Najila! Every true anime protagonist gets a dramatic second wind! 💪✨</p>
+                <button id="retryBtn" class="btn primary">Try Again</button>
+                <button id="goMenuBtn" class="btn">Main Menu</button>
+            </div>
+        </div>
+
+        <div id="victoryOverlay" class="overlay hidden">
+            <div class="panel victory-panel">
+                <h1 class="rainbow-text" id="victoryTitle">HAPPY BIRTHDAY NAJILA! 🌸🎂🎉</h1>
+                
+                <!-- Congratulatory Card -->
+                <div class="samuel-congrats-card">
+                    <div class="samuel-card-header">
+                        <div class="samuel-avatar-badge">🌟</div>
+                        <div class="samuel-header-text">
+                            <h3>Special Note for the Birthday Star 💌</h3>
+                            <span class="samuel-subtitle" id="samuelCardSubtitle">Your Proud Bestie & Number One Fan</span>
+                        </div>
+                    </div>
+                    <div class="samuel-message-body" id="samuelMessageBody">
+                        <p>“Najila! 🌸 Huge congratulations on conquering the quest! You brought total main character energy, unmatched charm, and effortless beauty every step of the way.</p>
+                        <p>Wishing you infinite laughter, luxury, peace of mind, high-paying wins, and delicious cake today and always! Enjoy your day, superstar! 🎂🥂💖”</p>
+                        <div class="samuel-signature">— Your Bestie ✨</div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <p id="statsSubtitle" style="font-size: 19px; color: var(--primary); margin-bottom: 8px;">🏆 Najila's Quest: Conquered! 🏆</p>
+                    <p>🧁 Cupcakes Collected: <span id="finalCupcakes">0</span></p>
+                    <p>🎁 Gifts Found: <span id="finalGifts">0</span></p>
+                    <p>⏱️ Play Time: <span id="finalTime">00:00</span></p>
+                </div>
+                
+                <div class="victory-actions">
+                    <button id="nextLevelBtn" class="btn primary" style="background: linear-gradient(135deg, #00b4d8, #0077b6); font-size: 17px; padding: 13px 22px; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4); display: none;">Proceed to Next Level 🏖️</button>
+                    <button id="replayBtn" class="btn primary">Play Again 🔄</button>
+                    <button id="celebrateBtn" class="btn" onclick="window.location.href='../wish.html'" style="background: linear-gradient(135deg, #ff477e, #ff7096); color: white;">Full Birthday Celebration ✨</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Secret Message -->
+        <div id="messageOverlay" class="overlay hidden">
+            <div class="panel message-panel">
+                <h2>A special note...</h2>
+                <p id="messageText"></p>
+                <div id="messagePic" class="hidden">
+                    <img src="" id="secretPic" alt="Secret Memory">
+                    <video id="secretVid" src="" controls style="max-width: 100%; display: none;"></video>
+                </div>
+                <button id="closeMsgBtn" class="btn primary">Continue</button>
+            </div>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobileControls" class="hidden">
+            <div class="dpad">
+                <button id="btnLeft" class="control-btn">◀</button>
+                <button id="btnRight" class="control-btn">▶</button>
+            </div>
+            <div class="action-buttons">
+                <button id="btnShoot" class="control-btn action-btn">🔥</button>
+                <button id="btnJump" class="control-btn action-btn">⬆</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="bgm" loop>
+        <source src="birthday-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="game.js"></script>
+    <script src="scroll.js"></script>
+</body>
+</html>
